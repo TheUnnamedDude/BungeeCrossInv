@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
@@ -21,14 +22,16 @@ public class NetworkListener implements Listener {
     @NonNull
     CrossInvBungeePlugin main;
 
+    HashMap<String, CrossInventory> inventories = new HashMap<String, CrossInventory>();
+
     @EventHandler
     public void onPluginMessage(PluginMessageEvent event) {
-        if ( event.getTag().equals( CrossInvBungeePlugin.bungeeSyncChannel ) ) {
-            inventories.put( ((ProxiedPlayer)event.getSender()).getName(), new CrossInventory( event.getData() ) );
+        if ( event.getSender() instanceof Server) {
+            if ( event.getTag().equals( CrossInvBungeePlugin.bungeeSyncChannel ) ) {
+                inventories.put( ((ProxiedPlayer)event.getReceiver()).getName(), new CrossInventory( event.getData() ) );
+            }
         }
     }
-
-    HashMap<String, CrossInventory> inventories = new HashMap<String, CrossInventory>();
 
     @EventHandler
     public void onServerConnected(ServerConnectedEvent event) {
